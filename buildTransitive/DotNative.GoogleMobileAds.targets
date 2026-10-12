@@ -1,0 +1,36 @@
+<Project>
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'linux-bionic-arm64' or '$(RuntimeIdentifier)' == 'android-arm64' or '$(RuntimeIdentifier)' == 'android-x64'">
+    <DotNativeNativeSource Include="$(MSBuildThisFileDirectory)../Platform/Android/*.kt" />
+    <DotNativeAndroidGradle Include="$(MSBuildThisFileDirectory)../Platform/Android/dependencies.gradle" />
+    <DotNativePluginEntry Include="MobileAdsPlugin" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">
+    <DotNativeNativeSource Include="$(MSBuildThisFileDirectory)../Platform/iOS/*.swift" />
+    <DotNativeAppleFrameworkSearchPath Include="$(MSBuildThisFileDirectory)../.ads-ios/iphoneos" />
+    <DotNativeNativeFramework Include="WebKit" />
+    <DotNativeNativeFramework Include="AVFoundation" />
+    <DotNativeNativeFramework Include="CoreMedia" />
+    <DotNativeNativeFramework Include="StoreKit" />
+    <DotNativeNativeFramework Include="AdSupport" />
+    <DotNativeNativeFramework Include="SafariServices" />
+    <DotNativePluginEntry Include="MobileAdsPlugin" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'iossimulator-arm64'">
+    <DotNativeNativeSource Include="$(MSBuildThisFileDirectory)../Platform/iOS/*.swift" />
+    <DotNativeAppleFrameworkSearchPath Include="$(MSBuildThisFileDirectory)../.ads-ios/iphonesimulator" />
+    <DotNativeNativeFramework Include="WebKit" />
+    <DotNativeNativeFramework Include="AVFoundation" />
+    <DotNativeNativeFramework Include="CoreMedia" />
+    <DotNativeNativeFramework Include="StoreKit" />
+    <DotNativeNativeFramework Include="AdSupport" />
+    <DotNativeNativeFramework Include="SafariServices" />
+    <DotNativePluginEntry Include="MobileAdsPlugin" />
+  </ItemGroup>
+  <Target
+    Name="FetchDotNativeMobileAdsAppleSdk"
+    BeforeTargets="StageDotNativeLinkInputs"
+    Condition="'$(RuntimeIdentifier)' == 'ios-arm64' or '$(RuntimeIdentifier)' == 'iossimulator-arm64'"
+  >
+    <Exec Command="bash &quot;$(MSBuildThisFileDirectory)../Platform/iOS/fetch.sh&quot; &quot;$(RuntimeIdentifier)&quot;" />
+  </Target>
+</Project>
