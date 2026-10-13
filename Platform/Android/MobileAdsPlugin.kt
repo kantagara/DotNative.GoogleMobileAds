@@ -1,6 +1,7 @@
 package com.dotnative.plugins
 
 import android.app.Activity
+import android.content.pm.PackageManager
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -20,7 +21,18 @@ class MobileAdsPlugin(private val activity: Activity) {
 
     init {
         val channel = NativeChannels.channel("dotnative.ads")
-        channel.handle("initialize") { _, reply ->
+        channel.handle("initialize") { args, reply ->
+            val expected = (args as? Map<*, *>)?.get("applicationId") as? String
+            if (expected != null) {
+                @Suppress("DEPRECATION")
+                val actual = activity.packageManager.getApplicationInfo(
+                    activity.packageName, PackageManager.GET_META_DATA
+                ).metaData?.getString("com.google.android.gms.ads.APPLICATION_ID")
+                if (actual != expected) {
+                    reply.failure("configuration_mismatch", "AddAdMobAds application ID does not match AndroidManifest.xml")
+                    return@handle
+                }
+            }
             MobileAds.initialize(activity) { activity.runOnUiThread { reply.success() } }
         }
         channel.handle("loadAppOpen") { args, reply ->

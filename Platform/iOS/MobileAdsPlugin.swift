@@ -14,7 +14,13 @@ import UIKit
 
     private init() {
         let channel = NativeChannels.channel("dotnative.ads")
-        channel.handle("initialize") { _, reply in
+        channel.handle("initialize") { arguments, reply in
+            if let expected = arguments.fields["applicationId"]?.string,
+                Bundle.main.object(forInfoDictionaryKey: "GADApplicationIdentifier") as? String != expected
+            {
+                reply.failure("configuration_mismatch", "AddAdMobAds application ID does not match Info.plist")
+                return
+            }
             MobileAds.shared.start { _ in Task { @MainActor in reply.success() } }
         }
         channel.handle("loadAppOpen") { [weak self] arguments, reply in
