@@ -18,22 +18,15 @@ public sealed record AdMobAdsOptions(string ApplicationId);
 
 public interface IMobileAds
 {
-    Task InitializeAsync(
-        CancellationToken cancellationToken = default);
+    Task InitializeAsync(CancellationToken cancellationToken = default);
 
-    Task LoadAppOpenAsync(
-        string adUnitId,
-        CancellationToken cancellationToken = default);
+    Task LoadAppOpenAsync(string adUnitId, CancellationToken cancellationToken = default);
 
-    Task ShowAppOpenAsync(
-        CancellationToken cancellationToken = default);
+    Task ShowAppOpenAsync(CancellationToken cancellationToken = default);
 
-    Task ShowBannerAsync(
-        string adUnitId,
-        CancellationToken cancellationToken = default);
+    Task ShowBannerAsync(string adUnitId, CancellationToken cancellationToken = default);
 
-    Task HideBannerAsync(
-        CancellationToken cancellationToken = default);
+    Task HideBannerAsync(CancellationToken cancellationToken = default);
 }
 
 public interface IAdMobAds : IMobileAds { }
@@ -46,7 +39,8 @@ public static class MobileAdsServices
 {
     public static IServiceCollection AddAdMobAds(
         this IServiceCollection services,
-        AdMobAdsOptions options)
+        AdMobAdsOptions options
+    )
     {
         ValidateOptions(options);
         return services.AddAdMobAds(_ => options);
@@ -54,7 +48,8 @@ public static class MobileAdsServices
 
     public static IServiceCollection AddAdMobAds(
         this IServiceCollection services,
-        Func<PresentationTarget, AdMobAdsOptions> configure)
+        Func<PresentationTarget, AdMobAdsOptions> configure
+    )
     {
         ArgumentNullException.ThrowIfNull(configure);
 
@@ -65,14 +60,13 @@ public static class MobileAdsServices
             return new MobileAdsService(
                 sp.GetRequiredService<IPlatformChannels>(),
                 target,
-                () => configure(target));
+                () => configure(target)
+            );
         });
-        services.TryAddSingleton<IMobileAds>(
-            sp => sp.GetRequiredService<IAdMobAds>());
+        services.TryAddSingleton<IMobileAds>(sp => sp.GetRequiredService<IAdMobAds>());
         services.TryAddEnumerable(
-            ServiceDescriptor.Singleton<
-                IApplicationInitializer,
-                AdMobInitializer>());
+            ServiceDescriptor.Singleton<IApplicationInitializer, AdMobInitializer>()
+        );
 
         return services;
     }
@@ -94,8 +88,7 @@ public static class MobileAdsServices
     }
 
     // Compatibility for applications configured exclusively through native packaging.
-    public static IServiceCollection AddMobileAds(
-        this IServiceCollection services)
+    public static IServiceCollection AddMobileAds(this IServiceCollection services)
     {
         services.TryAddSingleton<IMobileAds, MobileAdsService>();
         return services;
@@ -114,20 +107,18 @@ internal sealed class MobileAdsService(
 {
     private const string ChannelName = "dotnative.ads";
 
-    private bool IsMobile =>
-        target.Platform is NativePlatform.IOS or NativePlatform.Android;
+    private bool IsMobile => target.Platform is NativePlatform.IOS or NativePlatform.Android;
 
     private Task<object?> InvokeAsync(
         string method,
         Dictionary<string, object?>? arguments = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
-        return channels.Get(ChannelName)
-            .InvokeAsync(method, arguments, cancellationToken);
+        return channels.Get(ChannelName).InvokeAsync(method, arguments, cancellationToken);
     }
 
-    public Task InitializeAsync(
-        CancellationToken cancellationToken = default)
+    public Task InitializeAsync(CancellationToken cancellationToken = default)
     {
         if (!IsMobile)
             return Task.CompletedTask;
@@ -141,47 +132,36 @@ internal sealed class MobileAdsService(
             options?.ApplicationId is null
                 ? null
                 : new() { ["applicationId"] = options.ApplicationId },
-            cancellationToken);
+            cancellationToken
+        );
     }
 
-    public Task LoadAppOpenAsync(
-        string adUnitId,
-        CancellationToken cancellationToken = default)
+    public Task LoadAppOpenAsync(string adUnitId, CancellationToken cancellationToken = default)
     {
         ValidateUnit(adUnitId);
 
         return IsMobile
-            ? InvokeAsync(
-                "loadAppOpen",
-                new() { ["adUnitId"] = adUnitId },
-                cancellationToken)
+            ? InvokeAsync("loadAppOpen", new() { ["adUnitId"] = adUnitId }, cancellationToken)
             : Task.CompletedTask;
     }
 
-    public Task ShowAppOpenAsync(
-        CancellationToken cancellationToken = default)
+    public Task ShowAppOpenAsync(CancellationToken cancellationToken = default)
     {
         return IsMobile
             ? InvokeAsync("showAppOpen", cancellationToken: cancellationToken)
             : Task.CompletedTask;
     }
 
-    public Task ShowBannerAsync(
-        string adUnitId,
-        CancellationToken cancellationToken = default)
+    public Task ShowBannerAsync(string adUnitId, CancellationToken cancellationToken = default)
     {
         ValidateUnit(adUnitId);
 
         return IsMobile
-            ? InvokeAsync(
-                "showBanner",
-                new() { ["adUnitId"] = adUnitId },
-                cancellationToken)
+            ? InvokeAsync("showBanner", new() { ["adUnitId"] = adUnitId }, cancellationToken)
             : Task.CompletedTask;
     }
 
-    public Task HideBannerAsync(
-        CancellationToken cancellationToken = default)
+    public Task HideBannerAsync(CancellationToken cancellationToken = default)
     {
         return IsMobile
             ? InvokeAsync("hideBanner", cancellationToken: cancellationToken)
@@ -203,6 +183,5 @@ internal sealed class MobileAdsService(
 
 internal sealed class AdMobInitializer(IAdMobAds ads) : IApplicationInitializer
 {
-    public Task InitializeAsync(CancellationToken stopping) =>
-        ads.InitializeAsync(stopping);
+    public Task InitializeAsync(CancellationToken stopping) => ads.InitializeAsync(stopping);
 }

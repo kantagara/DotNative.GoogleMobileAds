@@ -7,7 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsAotCompatible>true</IsAotCompatible>
-    <Version>0.1.0-preview.1</Version>
+    <Version>0.1.0-preview.2</Version>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <DotNativePluginEntry>MobileAdsPlugin</DotNativePluginEntry>
@@ -24,6 +24,7 @@
       Version="0.1.0-preview.10"
       Condition="!Exists('$(DotNativeSourceRoot)/src/DotNative/DotNative.csproj')"
     />
+    <Compile Remove="tests/**/*.cs" />
     <None Remove="Platform/**/*;buildTransitive/**/*" />
     <None Include="Platform/**/*;buildTransitive/**/*" Pack="true" PackagePath="%(Identity)" />
     <None Remove="README.md;ORIGIN.md;LICENSE" />

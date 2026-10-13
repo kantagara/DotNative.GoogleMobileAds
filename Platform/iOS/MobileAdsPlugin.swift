@@ -13,12 +13,16 @@ import UIKit
     }
 
     private init() {
+        PlacementAdsPlugin.register()
         let channel = NativeChannels.channel("dotnative.ads")
         channel.handle("initialize") { arguments, reply in
             if let expected = arguments.fields["applicationId"]?.string,
-                Bundle.main.object(forInfoDictionaryKey: "GADApplicationIdentifier") as? String != expected
+                Bundle.main.object(forInfoDictionaryKey: "GADApplicationIdentifier") as? String
+                    != expected
             {
-                reply.failure("configuration_mismatch", "AddAdMobAds application ID does not match Info.plist")
+                reply.failure(
+                    "configuration_mismatch", "AddAdMobAds application ID does not match Info.plist"
+                )
                 return
             }
             MobileAds.shared.start { _ in Task { @MainActor in reply.success() } }
@@ -34,7 +38,8 @@ import UIKit
                         self?.appOpen = ad
                         reply.success()
                     } else {
-                        reply.failure("ad_failed", error?.localizedDescription ?? "The ad did not load")
+                        reply.failure(
+                            "ad_failed", error?.localizedDescription ?? "The ad did not load")
                     }
                 }
             }

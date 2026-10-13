@@ -3,3 +3,9 @@ obj/
 .DS_Store
 
 .ads-ios/
+
+.gradle/
+local.properties
+*.app/
+tests/native/**/build/
+.kotlin/

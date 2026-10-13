@@ -20,16 +20,22 @@ class MobileAdsPlugin(private val activity: Activity) {
     private var banner: AdView? = null
 
     init {
+        PlacementAdsPlugin(activity)
         val channel = NativeChannels.channel("dotnative.ads")
         channel.handle("initialize") { args, reply ->
             val expected = (args as? Map<*, *>)?.get("applicationId") as? String
             if (expected != null) {
                 @Suppress("DEPRECATION")
-                val actual = activity.packageManager.getApplicationInfo(
-                    activity.packageName, PackageManager.GET_META_DATA
-                ).metaData?.getString("com.google.android.gms.ads.APPLICATION_ID")
+                val actual =
+                    activity.packageManager
+                        .getApplicationInfo(activity.packageName, PackageManager.GET_META_DATA)
+                        .metaData
+                        ?.getString("com.google.android.gms.ads.APPLICATION_ID")
                 if (actual != expected) {
-                    reply.failure("configuration_mismatch", "AddAdMobAds application ID does not match AndroidManifest.xml")
+                    reply.failure(
+                        "configuration_mismatch",
+                        "AddAdMobAds application ID does not match AndroidManifest.xml",
+                    )
                     return@handle
                 }
             }
@@ -87,7 +93,8 @@ class MobileAdsPlugin(private val activity: Activity) {
                 val view = AdView(activity)
                 view.adUnitId = adUnitId
                 view.setAdSize(AdSize.LARGE_BANNER)
-                val content = activity.window.decorView.findViewById<ViewGroup>(android.R.id.content)
+                val content =
+                    activity.window.decorView.findViewById<ViewGroup>(android.R.id.content)
                 content.addView(
                     view,
                     FrameLayout.LayoutParams(

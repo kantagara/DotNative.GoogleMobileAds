@@ -7,6 +7,8 @@
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'ios-arm64'">
     <DotNativeNativeSource Include="$(MSBuildThisFileDirectory)../Platform/iOS/*.swift" />
     <DotNativeAppleFrameworkSearchPath Include="$(MSBuildThisFileDirectory)../.ads-ios/iphoneos" />
+    <DotNativeNativeFramework Include="GoogleMobileAds" />
+    <DotNativeNativeFramework Include="UserMessagingPlatform" />
     <DotNativeNativeFramework Include="WebKit" />
     <DotNativeNativeFramework Include="AVFoundation" />
     <DotNativeNativeFramework Include="CoreMedia" />
@@ -18,6 +20,8 @@
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'iossimulator-arm64'">
     <DotNativeNativeSource Include="$(MSBuildThisFileDirectory)../Platform/iOS/*.swift" />
     <DotNativeAppleFrameworkSearchPath Include="$(MSBuildThisFileDirectory)../.ads-ios/iphonesimulator" />
+    <DotNativeNativeFramework Include="GoogleMobileAds" />
+    <DotNativeNativeFramework Include="UserMessagingPlatform" />
     <DotNativeNativeFramework Include="WebKit" />
     <DotNativeNativeFramework Include="AVFoundation" />
     <DotNativeNativeFramework Include="CoreMedia" />
